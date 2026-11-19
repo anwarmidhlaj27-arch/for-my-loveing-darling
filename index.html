@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>A surprise for you</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:ital,wght@0,500;1,500&display=swap">
+<style>
+:root{--bg:#fff1f4;--bg2:#ffd3df;--ink:#4a1230;--soft:#8c5570;--accent:#d6336c;--gold:#e8a23b;--card:#ffffffb8;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#2a0a1f;--bg2:#52153a;--ink:#ffeaf0;--soft:#e2b3c8;--accent:#ff6b9a;--gold:#ffd9a0;--card:#ffffff14}}
+:root[data-theme="dark"]{--bg:#2a0a1f;--bg2:#52153a;--ink:#ffeaf0;--soft:#e2b3c8;--accent:#ff6b9a;--gold:#ffd9a0;--card:#ffffff14}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:radial-gradient(110% 80% at 50% 100%,var(--bg2),var(--bg));color:var(--ink);font-family:"Cormorant Garamond",Georgia,serif;font-size:1.2rem;overflow:hidden}
+h1,h2{font-family:"Great Vibes","Brush Script MT",cursive;font-weight:400;margin:0;line-height:1.05}
+h1{font-size:clamp(2.8rem,12vw,4.6rem)}
+p{margin:0}
+.screen{position:fixed;inset:0;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:calc(56px + env(safe-area-inset-top,0px)) 24px calc(24px + env(safe-area-inset-bottom,0px));text-align:center;opacity:0;pointer-events:none;transition:opacity .7s}
+.screen.on{opacity:1;pointer-events:auto}
+.sub{color:var(--soft);margin-top:10px;max-width:30ch;line-height:1.4;font-size:1.3rem}
+.pill{font:500 1.15rem "Cormorant Garamond",Georgia,serif;background:var(--accent);color:#fff;border:0;border-radius:999px;padding:12px 32px;margin-top:20px;cursor:pointer}
+.pill.ghost{background:none;color:var(--soft);padding:6px 12px;margin-top:4px;font-size:1rem}
+button:focus-visible,input:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+#prog{position:fixed;top:calc(18px + env(safe-area-inset-top,0px));left:0;right:0;z-index:3;display:flex;justify-content:center;gap:10px;font-size:1.1rem;color:var(--soft);opacity:0;transition:opacity .6s}
+#prog.on{opacity:1}#prog span{opacity:.3;transition:.4s}#prog span.d{opacity:1;color:var(--accent)}
+.code{display:flex;gap:10px;margin:24px 0 10px}
+.code input{width:3rem;height:3.6rem;border-radius:16px;border:2px solid var(--soft);background:var(--card);color:var(--ink);font:500 1.7rem "Cormorant Garamond",Georgia,serif;text-align:center;outline:none}
+.code input:focus{border-color:var(--accent)}
+.shake{animation:shake .45s}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+.hint{min-height:1.4em;color:var(--accent)}
+.flame{width:24px;height:38px;border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:radial-gradient(circle at 50% 70%,#fff4c2,var(--gold) 60%,transparent 72%);filter:drop-shadow(0 0 16px var(--gold));animation:flick 1.4s infinite alternate}
+@keyframes flick{to{transform:scale(1.1,.92) rotate(3deg)}}
+.game{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden}
+.hrt{position:absolute;bottom:-70px;pointer-events:auto;background:none;border:0;padding:10px;margin:0;font-size:2.6rem;line-height:1;color:var(--accent);cursor:pointer;animation:rise linear forwards;filter:drop-shadow(0 4px 10px #d6336c55)}
+.hrt.pop{animation:pop .35s forwards}
+@keyframes rise{to{transform:translateY(-120vh)}}
+@keyframes pop{to{transform:scale(2.2);opacity:0}}
+.bar{width:min(260px,70vw);height:10px;border-radius:99px;background:var(--card);margin-top:18px;overflow:hidden;border:1px solid var(--soft)}
+.bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .25s}
+#hold{background:none;border:0;padding:0;margin-top:22px;cursor:pointer;touch-action:none;user-select:none;-webkit-user-select:none}
+#hold svg{width:min(220px,60vw);height:auto;display:block}
+.opts{display:grid;gap:10px;margin-top:22px;width:min(320px,100%)}
+.opts button{font:500 1.15rem "Cormorant Garamond",Georgia,serif;color:var(--ink);background:var(--card);border:2px solid var(--soft);border-radius:16px;padding:12px;cursor:pointer}
+.opts button.bad{border-color:var(--accent);animation:shake .45s}
+#msg{font-style:italic;font-size:clamp(1.6rem,6vw,2.4rem);line-height:1.35;max-width:22ch;min-height:6em;display:flex;align-items:center;justify-content:center;transition:opacity .6s,transform .6s}
+#msg.out{opacity:0;transform:translateY(10px)}
+.candle{position:relative;width:26px;height:90px;margin:34px 0 0;border-radius:6px;background:linear-gradient(90deg,#fff,#ffd3df)}
+.candle .flame{position:absolute;left:50%;top:-44px;translate:-50% 0;cursor:pointer;border:0;padding:0;margin:0}
+.candle .flame.off{opacity:0;transition:opacity .5s;animation:none}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:22px;width:min(340px,100%)}
+.card{aspect-ratio:3/4;border-radius:14px;border:2px solid var(--soft);background:var(--card);font-size:1.9rem;cursor:pointer;padding:0;transition:.3s}
+.card span{opacity:0;transition:.3s}.card.up span{opacity:1}.card.up{border-color:var(--accent)}.card.ok{background:color-mix(in srgb,var(--accent) 22%,transparent)}
+.scr{position:relative;width:min(300px,82vw);aspect-ratio:2/1;border-radius:18px;background:var(--card);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;padding:16px;margin-top:20px;font-style:italic;font-size:1.3rem;line-height:1.3}
+.scr canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:auto;touch-action:none;border-radius:16px;transition:opacity .8s}
+.ans{font-size:1.9rem;letter-spacing:.25em;color:var(--accent);margin-top:20px}
+.tiles{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:22px;max-width:340px}
+.tile{width:3rem;height:3.4rem;border-radius:14px;border:2px solid var(--soft);background:var(--card);color:var(--ink);font:500 1.5rem "Cormorant Garamond",Georgia,serif;cursor:pointer}
+.tile:disabled{opacity:.25;cursor:default}.tile.bad{border-color:var(--accent);animation:shake .45s}
+canvas{position:fixed;inset:0;pointer-events:none}
+#bg{z-index:1}#fx{z-index:6}
+@media (prefers-reduced-motion:reduce){.flame,.shake{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div id="prog" aria-hidden="true"></div>
+
+<section class="screen on" id="lock">
+  <div class="flame" aria-hidden="true"></div>
+  <h1 style="margin-top:14px">Something just for you</h1>
+  <p class="sub">Enter our secret code to begin.</p>
+  <div class="code" id="code" role="group" aria-label="Secret code"></div>
+  <p class="hint" id="hint" role="status"></p>
+  <button class="pill" id="open">Open</button>
+  <button class="pill ghost" id="hintBtn">Show hint</button>
+</section>
+
+<section class="screen" id="hearts">
+  <h2 style="font-size:clamp(2.2rem,9vw,3.4rem)">Catch my hearts</h2>
+  <p class="sub" id="hSub"></p>
+  <div class="bar"><i id="hBar"></i></div>
+  <div class="game" id="game"></div>
+</section>
+
+<section class="screen" id="hold">
+  <h2 style="font-size:clamp(2.2rem,9vw,3.4rem)">Fill it with love</h2>
+  <p class="sub">Press and hold the heart. Think of us.</p>
+  <button id="holdBtn" aria-label="Hold to fill the heart">
+    <svg viewBox="-4 -4 108 98" aria-hidden="true"><defs><clipPath id="hc"><path d="M50 85C10 55 0 35 0 22C0 8 12 0 25 0C37 0 46 7 50 15C54 7 63 0 75 0C88 0 100 8 100 22C100 35 90 55 50 85Z"/></clipPath></defs>
+    <g clip-path="url(#hc)"><rect id="hf" x="0" y="90" width="100" height="90" fill="var(--accent)"/></g>
+    <path d="M50 85C10 55 0 35 0 22C0 8 12 0 25 0C37 0 46 7 50 15C54 7 63 0 75 0C88 0 100 8 100 22C100 35 90 55 50 85Z" fill="none" stroke="var(--accent)" stroke-width="3"/></svg>
+  </button>
+</section>
+
+<section class="screen" id="quiz">
+  <h2 style="font-size:clamp(2.2rem,9vw,3.2rem)">Do you remember?</h2>
+  <p class="sub" id="qText"></p>
+  <div class="opts" id="opts"></div>
+  <p class="hint" id="qHint" role="status"></p>
+</section>
+
+<section class="screen" id="match">
+  <h2 style="font-size:clamp(2.2rem,9vw,3.4rem)">Find the pairs</h2>
+  <p class="sub">Flip two cards at a time and match all four pairs.</p>
+  <div class="cards" id="cards"></div>
+</section>
+
+<section class="screen" id="scratch">
+  <h2 style="font-size:clamp(2.2rem,9vw,3.4rem)">A little gift</h2>
+  <p class="sub">Scratch the card to see what’s hidden.</p>
+  <div class="scr"><p id="sText"></p><canvas id="sc" width="300" height="150"></canvas></div>
+  <button class="pill" id="sNext" hidden>Continue</button>
+  <button class="pill ghost" id="sShow">Can’t scratch? Tap to reveal</button>
+</section>
+
+<section class="screen" id="word">
+  <h2 style="font-size:clamp(2.2rem,9vw,3.4rem)">Spell it out</h2>
+  <p class="sub" id="wClue"></p>
+  <p class="ans" id="wAns"></p>
+  <div class="tiles" id="tiles"></div>
+</section>
+
+<section class="screen" id="story">
+  <div id="msg" aria-live="polite"></div>
+  <button class="pill" id="next">Next</button>
+</section>
+
+<section class="screen" id="wish">
+  <h2 style="font-size:clamp(2.4rem,10vw,3.8rem)">Make a wish</h2>
+  <p class="sub">Close your eyes, wish for something sweet, then tap the flame.</p>
+  <div class="candle"><button class="flame" id="blow" aria-label="Blow out the candle"></button></div>
+</section>
+
+<section class="screen" id="final">
+  <h1 id="fTitle"></h1>
+  <p class="sub" id="fText" style="font-size:1.5rem;max-width:26ch"></p>
+  <button class="pill" id="again">Read it again</button>
+</section>
+
+<canvas id="fx"></canvas>
+
+<script>
+/* ===== EDIT THESE ===== */
+const CONFIG = {
+  name: "Nihala",
+  from: "Midhlaj",
+  code: "2324",
+  hint: "Our special numbers",
+  scratch: "Your gift: one perfect date, planned by me.",   // hidden under the scratch card
+  word: "FOREVER",                    // word she spells out
+  wordClue: "What I want with you",
+  heartsNeeded: 8,                    // hearts to catch
+  holdSeconds: 3,                     // seconds to hold the heart
+  quiz: {
+    q: "Where did we first meet?",    // change to a question only she can answer
+    options: ["On campus", "At a wedding", "Online", "On a bus"],
+    answer: 0                         // position of the right option (0 = first)
+  },
+  messages: [
+    "Hey you. Before anything else, I need you to know you’re my favorite person.",
+    "You make ordinary days feel like something worth remembering.",
+    "Thank you for every laugh, every late-night talk, and every time you stayed.",
+    "I hope this year gives you everything you’ve been quietly wishing for.",
+    "And whatever it brings, I’ll be right next to you."
+  ],
+  finalTitle: "Happy Birthday, {name}!",
+  finalText: "I love you, always. — {from}"
+};
+/* ====================== */
+
+const $ = id => document.getElementById(id);
+const stages = ['lock','hearts','hold','match','quiz','scratch','word','story','wish','final'];
+let timers = [];
+stages.slice(1).forEach(() => { const s = document.createElement('span'); s.textContent = '\u2665'; $('prog').appendChild(s); });
+function go(id) {
+  timers.forEach(clearInterval); timers = [];
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('on'));
+  $(id).classList.add('on');
+  const i = stages.indexOf(id);
+  $('prog').classList.toggle('on', i > 0);
+  [...$('prog').children].forEach((s, k) => s.classList.toggle('d', k < i));
+  ({ hearts: initHearts, hold: initHold, match: initMatch, quiz: initQuiz, scratch: initScratch, word: initWord, story: initStory, wish: initWish, final: initFinal })[id]?.();
+}
+
+/* 1. secret code */
+const L = CONFIG.code.length, boxes = [];
+for (let i = 0; i < L; i++) {
+  const b = document.createElement('input');
+  b.maxLength = 1; b.autocomplete = 'off';
+  b.setAttribute('aria-label', 'Code character ' + (i + 1));
+  b.addEventListener('input', () => { if (b.value && i < L - 1) boxes[i + 1].focus(); if (boxes.every(x => x.value)) check(); });
+  b.addEventListener('keydown', e => { if (e.key === 'Backspace' && !b.value && i > 0) boxes[i - 1].focus(); if (e.key === 'Enter') check(); });
+  boxes.push(b); $('code').appendChild(b);
+}
+setTimeout(() => boxes[0].focus(), 300);
+function check() {
+  if (boxes.map(b => b.value).join('').trim().toLowerCase() === CONFIG.code.toLowerCase()) { burst(60); go('hearts'); return; }
+  $('code').classList.remove('shake'); void $('code').offsetWidth; $('code').classList.add('shake');
+  $('hint').textContent = 'Not quite. Try again, love.';
+  boxes.forEach(b => b.value = ''); boxes[0].focus();
+}
+$('open').onclick = check;
+$('hintBtn').onclick = () => { $('hint').textContent = 'Hint: ' + CONFIG.hint; };
+
+/* 2. catch the hearts */
+function initHearts() {
+  let got = 0; const need = CONFIG.heartsNeeded, game = $('game');
+  game.innerHTML = ''; $('hBar').style.width = '0';
+  $('hSub').textContent = 'Tap ' + need + ' floating hearts before they fly away.';
+  const t = setInterval(() => {
+    const h = document.createElement('button');
+    h.className = 'hrt'; h.textContent = '\u2665'; h.setAttribute('aria-label', 'Catch the heart');
+    h.style.left = (6 + Math.random() * 80) + '%';
+    h.style.animationDuration = (4.5 + Math.random() * 3) + 's';
+    h.style.fontSize = (2 + Math.random() * 1.6) + 'rem';
+    h.onclick = () => {
+      if (h.classList.contains('pop')) return;
+      h.classList.add('pop'); setTimeout(() => h.remove(), 350);
+      got++; $('hBar').style.width = Math.min(100, got / need * 100) + '%';
+      if (got >= need) { clearInterval(t); burst(50); setTimeout(() => go('hold'), 900); }
+    };
+    h.addEventListener('animationend', e => { if (e.animationName === 'rise') h.remove(); });
+    game.appendChild(h);
+  }, 600);
+  timers.push(t);
+}
+
+/* 3. hold to fill the heart */
+function initHold() {
+  let p = 0, down = false, done = false; $('hf').setAttribute('y', 90);
+  const step = 100 / (CONFIG.holdSeconds * 20);
+  const t = setInterval(() => {
+    if (done) return;
+    p = Math.max(0, Math.min(100, p + (down ? step : -2)));
+    $('hf').setAttribute('y', 90 * (1 - p / 100));
+    if (p >= 100) { done = true; burst(70); setTimeout(() => go('match'), 900); }
+  }, 50);
+  timers.push(t);
+  const b = $('holdBtn');
+  b.onpointerdown = e => { e.preventDefault(); down = true; };
+  b.onpointerup = b.onpointerleave = b.onpointercancel = () => { down = false; };
+  b.onkeydown = e => { if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); down = true; } };
+  b.onkeyup = () => { down = false; };
+}
+
+/* 4. memory quiz */
+function initQuiz() {
+  const q = CONFIG.quiz; $('qText').textContent = q.q; $('qHint').textContent = ''; $('opts').innerHTML = '';
+  q.options.forEach((o, i) => {
+    const b = document.createElement('button'); b.textContent = o;
+    b.onclick = () => {
+      if (i === q.answer) { burst(70); $('qHint').textContent = 'You remembered.'; setTimeout(() => go('scratch'), 900); }
+      else { b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad'); $('qHint').textContent = 'Hmm, think again.'; }
+    };
+    $('opts').appendChild(b);
+  });
+}
+
+/* memory match */
+function initMatch() {
+  const em = ['💌', '🌹', '🍫', '🧸'], d = [...em, ...em].sort(() => Math.random() - .5), g = $('cards');
+  g.innerHTML = ''; let open = [], lock = false, pairs = 0;
+  d.forEach(e => {
+    const c = document.createElement('button'); c.className = 'card'; c.setAttribute('aria-label', 'Hidden card'); c.innerHTML = '<span>' + e + '</span>';
+    c.onclick = () => {
+      if (lock || c.classList.contains('up')) return;
+      c.classList.add('up'); open.push(c);
+      if (open.length === 2) {
+        lock = true; const [a, b] = open;
+        if (a.textContent === b.textContent) {
+          a.classList.add('ok'); b.classList.add('ok'); open = []; lock = false; pairs++;
+          if (pairs === em.length) { burst(70); setTimeout(() => go('quiz'), 1000); }
+        } else setTimeout(() => { a.classList.remove('up'); b.classList.remove('up'); open = []; lock = false; }, 800);
+      }
+    };
+    g.appendChild(c);
+  });
+}
+
+/* scratch card */
+function initScratch() {
+  $('sText').textContent = CONFIG.scratch;
+  const c = $('sc'), x = c.getContext('2d'), w = c.width, h = c.height;
+  c.style.opacity = 1; c.style.pointerEvents = 'auto'; $('sNext').hidden = true; $('sShow').hidden = false;
+  x.globalCompositeOperation = 'source-over';
+  const gr = x.createLinearGradient(0, 0, w, h); gr.addColorStop(0, '#e8a23b'); gr.addColorStop(1, '#d6336c');
+  x.fillStyle = gr; x.fillRect(0, 0, w, h);
+  x.fillStyle = '#fff'; x.font = '24px "Cormorant Garamond",Georgia,serif'; x.textAlign = 'center'; x.fillText('Scratch here \u2665', w / 2, h / 2 + 8);
+  x.globalCompositeOperation = 'destination-out';
+  let on = false, n = 0, done = false;
+  const reveal = () => { if (done) return; done = true; c.style.opacity = 0; c.style.pointerEvents = 'none'; $('sNext').hidden = false; $('sShow').hidden = true; burst(50); };
+  const scratch = e => {
+    if (!on) return;
+    const r = c.getBoundingClientRect();
+    x.beginPath(); x.arc((e.clientX - r.left) * w / r.width, (e.clientY - r.top) * h / r.height, 18, 0, 7); x.fill();
+    if (++n % 10 === 0) {
+      const d = x.getImageData(0, 0, w, h).data; let t = 0;
+      for (let i = 3; i < d.length; i += 16) if (d[i] === 0) t++;
+      if (t / (d.length / 16) > .45) reveal();
+    }
+  };
+  c.onpointerdown = e => { on = true; scratch(e); };
+  c.onpointermove = scratch;
+  c.onpointerup = c.onpointerleave = c.onpointercancel = () => { on = false; };
+  $('sShow').onclick = reveal;
+  $('sNext').onclick = () => go('word');
+}
+
+/* spell the word */
+function initWord() {
+  const w = CONFIG.word.toUpperCase(); let pos = 0;
+  $('wClue').textContent = CONFIG.wordClue + '. Tap the letters in the right order.';
+  $('wAns').textContent = [...w].map(() => '_').join(' ');
+  const t = $('tiles'); t.innerHTML = '';
+  [...w].sort(() => Math.random() - .5).forEach(ch => {
+    const b = document.createElement('button'); b.className = 'tile'; b.textContent = ch;
+    b.onclick = () => {
+      if (b.disabled) return;
+      if (ch === w[pos]) {
+        b.disabled = true; pos++;
+        $('wAns').textContent = [...w].map((l, i) => i < pos ? l : '_').join(' ');
+        if (pos === w.length) { burst(80); setTimeout(() => go('story'), 1000); }
+      } else { b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad'); }
+    };
+    t.appendChild(b);
+  });
+}
+
+/* 5. messages */
+let idx = 0;
+function render() {
+  const m = $('msg'); m.classList.add('out');
+  setTimeout(() => {
+    m.textContent = CONFIG.messages[idx];
+    $('next').textContent = idx === CONFIG.messages.length - 1 ? 'One last thing' : 'Next';
+    m.classList.remove('out');
+  }, idx === 0 ? 0 : 500);
+}
+function initStory() { idx = 0; render(); }
+$('next').onclick = () => { if (idx < CONFIG.messages.length - 1) { idx++; render(); } else go('wish'); };
+
+/* 6. make a wish */
+function initWish() {
+  const f = $('blow'); f.classList.remove('off');
+  f.onclick = () => { f.classList.add('off'); setTimeout(() => go('final'), 900); };
+}
+
+/* 7. finale */
+function initFinal() {
+  $('fTitle').textContent = CONFIG.finalTitle.replace('{name}', CONFIG.name);
+  $('fText').textContent = CONFIG.finalText.replace('{from}', CONFIG.from);
+  burst(180); setTimeout(() => burst(100), 1200);
+}
+$('again').onclick = () => go('story');
+
+/* floating petals + confetti */
+const bg = $('bg'), bx = bg.getContext('2d'), fx = $('fx'), cx = fx.getContext('2d');
+const still = matchMedia('(prefers-reduced-motion:reduce)').matches;
+function size() { bg.width = fx.width = innerWidth; bg.height = fx.height = innerHeight; }
+addEventListener('resize', size); size();
+const petals = Array.from({ length: still ? 0 : 26 }, () => ({ x: Math.random() * innerWidth, y: Math.random() * innerHeight, s: 10 + Math.random() * 22, v: .25 + Math.random() * .6, w: Math.random() * 6, a: .12 + Math.random() * .25 }));
+(function drift() {
+  bx.clearRect(0, 0, bg.width, bg.height);
+  bx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--accent');
+  petals.forEach(p => {
+    p.y -= p.v; p.w += .02; p.x += Math.sin(p.w) * .4;
+    if (p.y < -30) { p.y = bg.height + 30; p.x = Math.random() * bg.width; }
+    bx.globalAlpha = p.a; bx.font = p.s + 'px serif'; bx.fillText('\u2665', p.x, p.y);
+  });
+  bx.globalAlpha = 1; requestAnimationFrame(drift);
+})();
+let parts = [], raf;
+function burst(n) {
+  const cols = ['#ff6b9a', '#ffd9a0', '#d6336c', '#ffffff', '#e8a23b'];
+  for (let i = 0; i < n; i++) parts.push({ x: fx.width / 2, y: fx.height * .5, vx: (Math.random() - .5) * 15, vy: -Math.random() * 15 - 3, s: 5 + Math.random() * 7, c: cols[i % 5], r: 0, vr: (Math.random() - .5) * .3, heart: i % 3 === 0 });
+  cancelAnimationFrame(raf); loop();
+}
+function loop() {
+  cx.clearRect(0, 0, fx.width, fx.height);
+  parts.forEach(p => {
+    p.vy += .28; p.vx *= .99; p.x += p.vx; p.y += p.vy; p.r += p.vr;
+    cx.save(); cx.translate(p.x, p.y); cx.rotate(p.r); cx.fillStyle = p.c;
+    if (p.heart) { cx.font = (p.s * 2.4) + 'px serif'; cx.fillText('\u2665', -p.s, p.s); } else cx.fillRect(-p.s / 2, -p.s / 3, p.s, p.s * .6);
+    cx.restore();
+  });
+  parts = parts.filter(p => p.y < fx.height + 40);
+  if (parts.length) raf = requestAnimationFrame(loop);
+}
+</script>
+</body>
+</html>
